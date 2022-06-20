@@ -1,29 +1,37 @@
 class Calculadora {
+  static const List botoes = [ "C", "<-", "( )", "÷", 7, 8, 9, 
+  "x", 4, 5, 6, "-", 1, 2, 3, "+", 0, "", ".", "="];
+  String conta = "";
+  String resultado = "";
+  String stringNumeroAtual = "";
+
   List<double> numeros = [];
   List<String> operadores = [];
-  String numeroString = "";
   List<int> colchetesIndex = [];
 
 
-  String adicionarNumero(var numero) {
-    numeroString += numero.toString(); 
+   adicionarNumero(var numero) {
+    stringNumeroAtual += numero.toString(); 
     return numero.toString();
+    
   }
 
-   String adicionarOperador(String operador) {
-    numeros.add(double.parse(numeroString));
-     numeroString = "";
+    adicionarOperador(String operador) {
+    numeros.add(double.parse(stringNumeroAtual));
+     stringNumeroAtual = "";
     operadores.add(operador);
-    return operador;
+    return  operador;
   }
 
-  String adicionarColchetes() {
+   adicionarColchetes() {
     if (colchetesIndex.length % 2 == 0) {
       colchetesIndex.add(operadores.length);
        return "(";
-    } 
+       
+    } else {
     colchetesIndex.add(operadores.length);
-       return ")";
+       return  ")";
+    }
   }
 
 
@@ -36,14 +44,14 @@ class Calculadora {
 
 
   limparUm() {
-    if(numeroString.isEmpty) {
+    if(stringNumeroAtual.isEmpty) {
       
       if (operadores.length == (colchetesIndex.isNotEmpty ? colchetesIndex.last :  0)) {
         colchetesIndex.removeLast();
         return;
       }
       operadores.removeLast();
-      numeroString = formatarNumeroInteiro(numeros.last);
+      stringNumeroAtual = formatarNumeroInteiro(numeros.last);
       numeros.removeLast();
      
     }  else {
@@ -51,22 +59,24 @@ class Calculadora {
         colchetesIndex.removeLast();
         return;
       } 
-     numeroString = numeroString.substring(0, numeroString.length -1);
+     stringNumeroAtual = stringNumeroAtual.substring(0, stringNumeroAtual.length -1);
     }
+   
   }
 
   limpar() {
     numeros.clear();
     operadores.clear();
     colchetesIndex.clear();
-    numeroString ="";
+    stringNumeroAtual ="";
+    return "";
   }
 
 
 
 
-  String calcular() {
-    numeros.add(double.parse(numeroString));
+   calcular() {
+    numeros.add(double.parse(stringNumeroAtual));
     List<double> numerosColchetes = [];
     List<String> operadoresColchetes = [];
 
@@ -88,12 +98,12 @@ class Calculadora {
           operadores.removeRange(colchetesIndex[i], (colchetesIndex[i + 1]));
         }
     
-    numeroString = realizarOperacoes(operadores, numeros);
+    stringNumeroAtual = realizarOperacoes(operadores, numeros);
   
     numeros.clear();
     operadores.clear();
     colchetesIndex.clear();
-    return numeroString;
+    return  stringNumeroAtual;
   }
 
   
@@ -135,6 +145,4 @@ class Calculadora {
     return formatarNumeroInteiro(numeros.last);
   }
 
-
-  
 }
