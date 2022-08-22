@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class Texto extends StatelessWidget {
-  const Texto({ Key? key, required this.texto, required this.index }) : super(key: key);
+class TextoDoBotao extends StatelessWidget {
+  const TextoDoBotao({ Key? key, required this.texto, required this.index }) : super(key: key);
   final String texto;
   final int index;
 

@@ -3,61 +3,79 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../model/calculadora.dart';
 
-class CalculadoraBloc extends Cubit<String> {
+part 'calculadora_states.dart';
+part 'calculadora_events.dart';
+
+class CalculadoraBloc extends Bloc<CalculadoraEventos, CalculadoraEstados> {
   final Calculadora _calculadora;
-  CalculadoraBloc(this._calculadora) : super('');
-
-  mudarTexto(String texto) {
-      emit(state + texto);
+  CalculadoraBloc(this._calculadora) : super(EstadoInicial('')) {
+    on<AdicionarDigito>(_adicionarDigito);
+    on<MostrarResultado>(_mostrarResultado);
+    on<Limpar>(_limpar);
+    on<LimparUm>(_limparUm);
   }
 
-  mostrarResultado(String resultado) {
-       emit(resultado);
+  _adicionarDigito(AdicionarDigito event, Emitter emit) {
+    if (state is MostrandoResultado) {
+      emit(MostrandoResultado(_calculadora.conta,
+          resultado: _calculadora.resultado));
+    } else {
+      emit(RecebendoDados(_calculadora.conta));
+    }
   }
 
-  limpar() {
-      emit("");
+  _mostrarResultado(MostrarResultado event, Emitter emit) {
+    _calculadora.calcular();
+    emit(MostrandoResultado(_calculadora.conta,
+          resultado: _calculadora.resultado));
+  }
+
+  _limpar(Limpar event, Emitter emit) {
+    emit(EstadoInicial(''));
     _calculadora.limpar();
   }
 
-  limparUm() {
-    if (state.isNotEmpty) {
-        emit(state.substring(0, state.length - 1));
-      _calculadora.limparUm();
+  _limparUm(LimparUm event, Emitter<CalculadoraEstados> emit) {
+    _calculadora.limparUm();
+    if (state is MostrandoResultado) {
+      emit(MostrandoResultado(_calculadora.conta,
+          resultado: _calculadora.resultado));
+    } else {
+      emit(RecebendoDados(_calculadora.conta));
     }
   }
 
   VoidCallback pegarFuncaoDoBotao(var textoBotao) {
-    print(textoBotao);
     if (textoBotao.runtimeType == int || textoBotao == ".") {
       return () {
-        print('adicionarNumero');
-        mudarTexto(_calculadora.adicionarNumero(textoBotao));
+        _calculadora.adicionarNumero(textoBotao);
+         add(AdicionarDigito());
       };
     } else {
       switch (textoBotao) {
         case "C":
-          return limpar;
+           return () {
+            add(Limpar());
+          };
         case "=":
           return () {
-            print('mostrarResultado');
-            mostrarResultado(_calculadora.calcular());
+            add(MostrarResultado());
           };
         case "<-":
-          return limparUm;
+          return () {
+            add(LimparUm());
+          };
         case "( )":
           return () {
-            print('adicionarColchetes');
-            mudarTexto(_calculadora.adicionarColchetes());
+           _calculadora.adicionarColchetes();
+            add(AdicionarDigito());
           };
         default:
           return () {
-            print('adicionarOperador');
-            mudarTexto(_calculadora.adicionarOperador(textoBotao));
+            _calculadora.adicionarOperador(textoBotao);
+             add(AdicionarDigito());
           };
       }
     }
   }
-
-
 }
