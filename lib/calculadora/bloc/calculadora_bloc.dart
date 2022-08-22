@@ -20,7 +20,6 @@ class CalculadoraBloc extends Bloc<CalculadoraEventos, CalculadoraEstados> {
       emit(MostrandoResultado(_calculadora.conta,
           resultado: _calculadora.resultado));
     } else {
-      print(_calculadora.conta);
       emit(RecebendoDados(_calculadora.conta));
     }
   }
@@ -47,12 +46,9 @@ class CalculadoraBloc extends Bloc<CalculadoraEventos, CalculadoraEstados> {
   }
 
   VoidCallback pegarFuncaoDoBotao(var textoBotao) {
-    print(textoBotao);
     if (textoBotao.runtimeType == int || textoBotao == ".") {
       return () {
-        print('adicionarNumero');
         _calculadora.adicionarNumero(textoBotao);
-        print(_calculadora.conta);
          add(AdicionarDigito());
       };
     } else {
@@ -63,7 +59,6 @@ class CalculadoraBloc extends Bloc<CalculadoraEventos, CalculadoraEstados> {
           };
         case "=":
           return () {
-            print('mostrarResultado');
             add(MostrarResultado());
           };
         case "<-":
@@ -77,7 +72,6 @@ class CalculadoraBloc extends Bloc<CalculadoraEventos, CalculadoraEstados> {
           };
         default:
           return () {
-            print('adicionarOperador');
             _calculadora.adicionarOperador(textoBotao);
              add(AdicionarDigito());
           };
